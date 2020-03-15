@@ -1,6 +1,6 @@
 /*
 IGIS - Remote graphics for Swift on Linux
-Copyright (C) 2018-2020 Tango Golf Digital, LLC
+Copyright (C) 2018, 2019 Tango Golf Digital, LLC
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
@@ -55,7 +55,6 @@ function onLoad() {
 
     // Object dictionaries
     gradientDictionary = {};
-    patternDictionary = {};
 
     // Register events
     window.addEventListener("keydown", onKeyDown);
@@ -360,12 +359,6 @@ function processCommand(commandMessage, commandIndex) {
     case "createRadialGradient":
 	processCreateRadialGradient(arguments);
 	break;
-    case "createPattern":
-	processCreatePattern(arguments);
-	break;
-    case "cursorStyle":
-	processCursorStyle(arguments);
-	break;
     case "drawImage":
 	processDrawImage(arguments);
 	break;
@@ -383,9 +376,6 @@ function processCommand(commandMessage, commandIndex) {
 	break;
     case "fillStyleGradient":
 	processFillStyleGradient(arguments);
-	break;
-    case "fillStylePattern":
-	processFillStylePattern(arguments);
 	break;
     case "fillText":
 	processFillText(arguments);
@@ -619,45 +609,8 @@ function processCreateRadialGradient(arguments) {
     doSend(messageProcessed);
     let messageLoaded = "onRadialGradientLoaded|" + id;
     doSend(messageLoaded);
-}
+    
 
-function processCreatePattern(arguments) {
-    if (arguments.length != 3) {
-	logError("processCreatePattern: Requires three arguments");
-	return;
-    }
-
-    let id = arguments.shift();
-    let imageId = arguments.shift();
-    let repetitionString = arguments.shift();
-
-    let img = document.getElementById(imageId);
-
-    let repetitionMode = "";
-    switch (repetitionString) {
-    case "repeated":
-	repetitionMode = 'repeat';
-	break;
-    case "repeatedX":
-	repetionMode = 'repeat-x';
-	break;
-    case "repeatedY":
-	repetitionMode = 'repeat-y';
-	break;
-    case "notRepeated":
-	repetitionMode = 'no-repeat';
-	break;
-    default:
-	logError("processCreatePattern: Unexpected repeat value");
-    }
-
-    let pattern = context.createPattern(img, repetitionMode);
-    patternDictionary[id] = pattern;
-
-    let messageProcessed = "onPatternProcessed|" + id;
-    doSend(messageProcessed);
-    let messageLoaded = "onPatternLoaded|" + id;
-    doSend(messageLoaded);
 }
 
 function processCreateImage(arguments) {
@@ -668,15 +621,6 @@ function processCreateImage(arguments) {
     let id = arguments.shift();
     let sourceURL = arguments.shift();
     createImage(id, sourceURL);
-}
-
-function processCursorStyle(arguments) {
-    if (arguments.length != 1) {
-	logError("processCursorStyle: Requires one argument");
-	return;
-    }
-    let cursorStyle = arguments.shift();
-    document.body.style.cursor = cursorStyle;
 }
 
 function processSetAudioMode(arguments) {
@@ -795,16 +739,6 @@ function processFillStyleGradient(arguments) {
     let gradientId = arguments.shift();
     let gradient = gradientDictionary[gradientId];
     context.fillStyle = gradient;
-}
-
-function processFillStylePattern(arguments) {
-    if (arguments.length != 1) {
-	logError("processFillStylePattern: Requires one argument");
-	return;
-    }
-    let patternId = arguments.shift();
-    let pattern = patternDictionary[patternId];
-    context.fillStyle = pattern;
 }
 
 function processFillText(arguments) {

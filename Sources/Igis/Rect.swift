@@ -59,14 +59,6 @@ public struct Rect : Equatable {
         }
     }
 
-    public var centerX : Int {
-        return topLeft.x + size.width / 2
-    }
-
-    public var centerY : Int {
-        return topLeft.y + size.height / 2
-    }
-
     public init(size:Size) {
         self.topLeft = Point()
         self.size = size
@@ -95,12 +87,6 @@ public struct Rect : Equatable {
     public init(source:Rect) {
         self.topLeft = source.topLeft
         self.size = source.size
-    }
-
-    public func local(to origin:Rect) -> Rect {
-        var localized = self
-        localized.topLeft.moveBy(offsetX:-origin.topLeft.x, offsetY:-origin.topLeft.y)
-        return localized
     }
 
     public func containment(target:Point) -> ContainmentSet {
@@ -138,11 +124,6 @@ public struct Rect : Equatable {
             containmentSet.formUnion([.containedFully])
         default:
             break;
-        }
-
-        // Handle contact
-        if containmentSet.intersection([.beyondHorizontally, .beyondVertically]).isEmpty {
-            containmentSet.formUnion([.contact])
         }
 
         return containmentSet
@@ -198,11 +179,6 @@ public struct Rect : Equatable {
             containmentSet.formUnion([.overlapsFully])
         default:
             break;
-        }
-
-        // Handle contact
-        if containmentSet.intersection([.beyondHorizontally, .beyondVertically]).isEmpty {
-            containmentSet.formUnion([.contact])
         }
 
         return containmentSet

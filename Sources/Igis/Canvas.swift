@@ -39,18 +39,14 @@ public class Canvas {
 
     // MARK: ********** API **********
 
-    public func render(_ canvasObjects:[CanvasObject]) {
+    public func render(_ canvasObjects:CanvasObject...) {
         for canvasObject in canvasObjects {
             let command = canvasObject.canvasCommand()
             pendingCommandList.append(command)
         }
     }
 
-    public func render(_ canvasObjects:CanvasObject...) {
-        render(canvasObjects)
-    }
-
-    public func setup(_ canvasIdentifiedObjects:[CanvasIdentifiedObject]) {
+    public func setup(_ canvasIdentifiedObjects:CanvasIdentifiedObject...) {
         for canvasIdentifiedObject in canvasIdentifiedObjects {
             identifiedObjectDictionary[canvasIdentifiedObject.id] = canvasIdentifiedObject
             
@@ -59,10 +55,6 @@ public class Canvas {
             
             canvasIdentifiedObject.setState(.transmissionQueued)
         }
-    }
-
-    public func setup(_ canvasIdentifiedObjects:CanvasIdentifiedObject...) {
-        setup(canvasIdentifiedObjects)
     }
 
     public func canvasSetSize(size:Size) {
@@ -147,12 +139,6 @@ public class Canvas {
                 receptionOnLinearGradientProcessed(arguments:arguments)
             case "onRadialGradientProcessed":
                 receptionOnRadialGradientProcessed(arguments:arguments)
-
-                // Pattern events
-            case "onPatternLoaded":
-                receptionOnPatternLoaded(arguments:arguments)
-            case "onPatternProcessed":
-                receptionOnPatternProcessed(arguments:arguments)
 
                 // Audio events
             case "onAudioError":
@@ -354,33 +340,7 @@ public class Canvas {
         identifiedObject.setState(.ready)
     }
 
-    internal func receptionOnPatternProcessed(arguments:[String]) {
-        guard arguments.count == 1,
-              let id = UUID(uuidString:arguments[0]) else {
-            print("ERROR: receptionOnPatternProcessed requires exactly one argument which must be a valid UUID.")
-            return
-        }
-
-        guard let identifiedObject = identifiedObjectDictionary[id] else {
-            print("ERROR: receptionOnPatternProcessed: Object with id \(id.uuidString) was not found.")
-            return
-        }
-        identifiedObject.setState(.processedByClient)
-    }
-
-    internal func receptionOnPatternLoaded(arguments:[String]) {
-        guard arguments.count == 1,
-              let id = UUID(uuidString:arguments[0]) else {
-            print("ERROR: receptionOnPatternLoaded requires exactly one argument which must be a valid UUID.")
-            return
-        }
-
-        guard let identifiedObject = identifiedObjectDictionary[id] else {
-            print("ERROR: receptionOnPatternLoaded: Object with id \(id.uuidString) was not found.")
-            return
-        }
-        identifiedObject.setState(.ready)
-    }
+    
 
     internal func receptionOnAudioError(arguments:[String]) {
         guard arguments.count == 1,
